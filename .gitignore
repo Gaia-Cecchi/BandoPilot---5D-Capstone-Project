@@ -6,8 +6,10 @@
 *credentials*.json
 service-account*.json
 
-# --- Course material (kept local, not published) ---
+# --- Course material / internal drafts (kept local, not published) ---
 kaggle-instructions/
+VIDEO_SCRIPT.md
+SUBMISSION_ITA.md
 
 # --- Python / uv ---
 .venv/

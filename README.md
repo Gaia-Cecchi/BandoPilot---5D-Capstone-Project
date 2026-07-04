@@ -13,7 +13,7 @@
 [![Cloud Run](https://img.shields.io/badge/Deployed-Cloud%20Run-4285F4?logo=googlecloud&logoColor=white)](https://cloud.google.com/run)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**🔗 [Live demo](https://bandopilot-530700297106.us-central1.run.app)** · **📄 [Capstone writeup](SUBMISSION.md)** · **🎬 [Video script](VIDEO_SCRIPT.md)**
+**🔗 [Live demo](https://bandopilot-530700297106.us-central1.run.app)** · **📄 [Capstone writeup](SUBMISSION.md)** · **🎬 [Demo video](https://youtu.be/AOttBc413wY)**
 
 </div>
 

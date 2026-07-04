@@ -4,7 +4,7 @@
 
 - **App URL (Cloud Run, public):** https://bandopilot-530700297106.us-central1.run.app
   (the root redirects to the **chat UI** at `/dev-ui/`; no password required)
-- **Demo video:** _[TO ADD — 2-3 min]_
+- **Demo video:** https://youtu.be/AOttBc413wY
 - **Code:** this repository (`bandopilot/`)
 
 > **How to try the demo:** open the App URL in a browser, select the `app` agent, and
