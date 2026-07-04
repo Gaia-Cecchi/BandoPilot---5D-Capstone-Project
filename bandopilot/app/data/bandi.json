@@ -1,0 +1,246 @@
+{
+  "_meta": {
+    "descrizione": "Corpus dimostrativo curato per il capstone BandoPilot. NON e una fonte ufficiale: i dati sono realistici ma semplificati e vanno sempre verificati sulla fonte indicata.",
+    "aggiornato_al": "2026-07-04",
+    "unita_importi": "EUR"
+  },
+  "bandi": [
+    {
+      "id": "nuova-sabatini",
+      "titolo": "Nuova Sabatini - Beni strumentali",
+      "ente": "Ministero delle Imprese e del Made in Italy",
+      "tipo": "finanziamento agevolato + contributo",
+      "descrizione": "Agevolazioni per l'acquisto di macchinari, impianti, attrezzature e beni strumentali 4.0 da parte di micro, piccole e medie imprese.",
+      "settori": ["tutti"],
+      "regioni": ["nazionale"],
+      "dimensioni": ["micro", "piccola", "media"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Essere una PMI (micro, piccola o media impresa)", "tipo": "dimensione", "valore": ["micro", "piccola", "media"]},
+        {"codice": "R2", "descrizione": "Sede operativa in Italia", "tipo": "regione", "valore": ["nazionale"]},
+        {"codice": "R3", "descrizione": "Investimento in beni strumentali nuovi", "tipo": "manuale", "valore": null}
+      ],
+      "spese_ammissibili": ["macchinari", "impianti", "attrezzature", "hardware", "software", "tecnologie digitali 4.0"],
+      "importo": "da 20.000 a 4.000.000 EUR di finanziamento",
+      "importo_max": 4000000,
+      "scadenza": "2026-12-31",
+      "fonte_url": "https://www.mimit.gov.it/it/incentivi/nuova-sabatini"
+    },
+    {
+      "id": "smart-start-italia",
+      "titolo": "Smart&Start Italia",
+      "ente": "Invitalia",
+      "tipo": "finanziamento agevolato a tasso zero",
+      "descrizione": "Sostegno alla nascita e alla crescita delle startup innovative in tutta Italia.",
+      "settori": ["ICT", "servizi", "manifatturiero"],
+      "regioni": ["nazionale"],
+      "dimensioni": ["startup", "micro"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Essere una startup innovativa iscritta alla sezione speciale del Registro Imprese", "tipo": "dimensione", "valore": ["startup"]},
+        {"codice": "R2", "descrizione": "Costituita da non piu di 60 mesi", "tipo": "anni_attivita_max", "valore": 5},
+        {"codice": "R3", "descrizione": "Programma di spesa tra 100.000 e 1.500.000 EUR", "tipo": "manuale", "valore": null}
+      ],
+      "spese_ammissibili": ["impianti", "attrezzature", "software", "brevetti", "consulenze specialistiche", "personale"],
+      "importo": "fino a 1.500.000 EUR",
+      "importo_max": 1500000,
+      "scadenza": "2027-06-30",
+      "fonte_url": "https://www.invitalia.it/cosa-facciamo/creiamo-nuove-aziende/smartstart-italia"
+    },
+    {
+      "id": "fondo-impresa-femminile",
+      "titolo": "Fondo Impresa Femminile",
+      "ente": "Ministero delle Imprese e del Made in Italy / Invitalia",
+      "tipo": "contributo a fondo perduto + finanziamento agevolato",
+      "descrizione": "Incentivi per la nascita, lo sviluppo e il consolidamento di imprese a prevalente partecipazione femminile.",
+      "settori": ["tutti"],
+      "regioni": ["nazionale"],
+      "dimensioni": ["startup", "micro", "piccola"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Impresa a prevalente partecipazione femminile", "tipo": "manuale", "valore": null},
+        {"codice": "R2", "descrizione": "Micro o piccola impresa (o persona fisica che avvia impresa)", "tipo": "dimensione", "valore": ["startup", "micro", "piccola", "persona_fisica"]},
+        {"codice": "R3", "descrizione": "Sede legale e/o operativa in Italia", "tipo": "regione", "valore": ["nazionale"]}
+      ],
+      "spese_ammissibili": ["impianti", "macchinari", "software", "spese di costituzione", "marketing", "capitale circolante"],
+      "importo": "fino a 250.000 EUR",
+      "importo_max": 250000,
+      "scadenza": "2026-11-30",
+      "fonte_url": "https://www.invitalia.it/cosa-facciamo/creiamo-nuove-aziende/fondo-impresa-donna"
+    },
+    {
+      "id": "resto-al-sud",
+      "titolo": "Resto al Sud",
+      "ente": "Invitalia",
+      "tipo": "contributo a fondo perduto + finanziamento bancario",
+      "descrizione": "Incentivo per sostenere la nascita e lo sviluppo di nuove attivita imprenditoriali e libero-professionali nel Mezzogiorno e nelle aree del cratere sismico.",
+      "settori": ["tutti"],
+      "regioni": ["Abruzzo", "Basilicata", "Calabria", "Campania", "Molise", "Puglia", "Sardegna", "Sicilia"],
+      "dimensioni": ["startup", "micro", "persona_fisica"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Sede dell'attivita in una regione del Mezzogiorno ammessa", "tipo": "regione", "valore": ["Abruzzo", "Basilicata", "Calabria", "Campania", "Molise", "Puglia", "Sardegna", "Sicilia"]},
+        {"codice": "R2", "descrizione": "Nuova attivita o costituita da non piu di 60 mesi", "tipo": "anni_attivita_max", "valore": 5},
+        {"codice": "R3", "descrizione": "Eta del richiedente tra 18 e 55 anni", "tipo": "manuale", "valore": null}
+      ],
+      "spese_ammissibili": ["ristrutturazioni", "macchinari", "attrezzature", "programmi informatici", "capitale circolante"],
+      "importo": "fino a 50.000 EUR (fino a 200.000 per societa)",
+      "importo_max": 200000,
+      "scadenza": "2027-12-31",
+      "fonte_url": "https://www.invitalia.it/cosa-facciamo/creiamo-nuove-aziende/resto-al-sud"
+    },
+    {
+      "id": "simest-394-internazionalizzazione",
+      "titolo": "SIMEST 394/81 - Internazionalizzazione",
+      "ente": "SIMEST (Gruppo CDP)",
+      "tipo": "finanziamento agevolato + quota fondo perduto",
+      "descrizione": "Finanziamenti agevolati per supportare i processi di internazionalizzazione delle imprese italiane su mercati esteri.",
+      "settori": ["manifatturiero", "commercio", "servizi", "ICT", "agroalimentare"],
+      "regioni": ["nazionale"],
+      "dimensioni": ["micro", "piccola", "media", "grande"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Impresa con sede in Italia", "tipo": "regione", "valore": ["nazionale"]},
+        {"codice": "R2", "descrizione": "Almeno due bilanci depositati (impresa gia costituita)", "tipo": "anni_attivita_min", "valore": 2},
+        {"codice": "R3", "descrizione": "Progetto di sviluppo su mercati esteri", "tipo": "manuale", "valore": null}
+      ],
+      "spese_ammissibili": ["partecipazione a fiere", "e-commerce", "temporary export manager", "consulenze", "studi di fattibilita"],
+      "importo": "variabile per linea (es. fino a 500.000 EUR fiere)",
+      "importo_max": 500000,
+      "scadenza": "2026-12-15",
+      "fonte_url": "https://www.simest.it"
+    },
+    {
+      "id": "credito-imposta-40",
+      "titolo": "Credito d'imposta Transizione 4.0 - Beni strumentali",
+      "ente": "Agenzia delle Entrate / MIMIT",
+      "tipo": "credito d'imposta",
+      "descrizione": "Credito d'imposta per investimenti in beni strumentali materiali e immateriali 4.0 funzionali alla trasformazione tecnologica e digitale.",
+      "settori": ["tutti"],
+      "regioni": ["nazionale"],
+      "dimensioni": ["micro", "piccola", "media", "grande"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Impresa residente in Italia", "tipo": "regione", "valore": ["nazionale"]},
+        {"codice": "R2", "descrizione": "Investimento in beni 4.0 interconnessi (Allegato A/B)", "tipo": "manuale", "valore": null}
+      ],
+      "spese_ammissibili": ["beni materiali 4.0", "beni immateriali 4.0", "software di gestione"],
+      "importo": "credito in percentuale sull'investimento",
+      "importo_max": 2000000,
+      "scadenza": "2026-12-31",
+      "fonte_url": "https://www.mimit.gov.it/it/transizione40"
+    },
+    {
+      "id": "toscana-innovazione-pmi",
+      "titolo": "PR FESR Toscana - Innovazione delle PMI",
+      "ente": "Regione Toscana",
+      "tipo": "contributo a fondo perduto",
+      "descrizione": "Sostegno a progetti di innovazione di prodotto e di processo delle PMI con sede in Toscana.",
+      "settori": ["manifatturiero", "ICT", "servizi", "artigianato"],
+      "regioni": ["Toscana"],
+      "dimensioni": ["micro", "piccola", "media"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Unita locale destinataria in Toscana", "tipo": "regione", "valore": ["Toscana"]},
+        {"codice": "R2", "descrizione": "Essere una PMI", "tipo": "dimensione", "valore": ["micro", "piccola", "media"]},
+        {"codice": "R3", "descrizione": "Fatturato annuo non superiore a 50 milioni EUR", "tipo": "fatturato_max", "valore": 50000000}
+      ],
+      "spese_ammissibili": ["ricerca e sviluppo", "consulenze innovazione", "attrezzature", "brevetti", "personale di ricerca"],
+      "importo": "da 30.000 a 400.000 EUR",
+      "importo_max": 400000,
+      "scadenza": "2026-09-30",
+      "fonte_url": "https://www.regione.toscana.it/imprese"
+    },
+    {
+      "id": "isi-inail-sicurezza",
+      "titolo": "Bando ISI INAIL - Sicurezza sul lavoro",
+      "ente": "INAIL",
+      "tipo": "contributo a fondo perduto",
+      "descrizione": "Incentivi alle imprese per la realizzazione di interventi di miglioramento dei livelli di salute e sicurezza nei luoghi di lavoro.",
+      "settori": ["manifatturiero", "edilizia", "agroalimentare", "artigianato"],
+      "regioni": ["nazionale"],
+      "dimensioni": ["micro", "piccola", "media", "grande"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Impresa iscritta alla Camera di Commercio con sede in Italia", "tipo": "regione", "valore": ["nazionale"]},
+        {"codice": "R2", "descrizione": "Progetto di miglioramento della sicurezza", "tipo": "manuale", "valore": null}
+      ],
+      "spese_ammissibili": ["macchinari piu sicuri", "dispositivi di protezione", "bonifiche", "sistemi di gestione sicurezza"],
+      "importo": "fino a 130.000 EUR",
+      "importo_max": 130000,
+      "scadenza": "2026-06-30",
+      "fonte_url": "https://www.inail.it/incentivi-isi"
+    },
+    {
+      "id": "voucher-digitalizzazione-lombardia",
+      "titolo": "Voucher Digitalizzazione PMI - Lombardia",
+      "ente": "Regione Lombardia / Unioncamere",
+      "tipo": "voucher / contributo a fondo perduto",
+      "descrizione": "Voucher per l'adozione di tecnologie digitali (e-commerce, cybersecurity, cloud, CRM) da parte delle PMI lombarde.",
+      "settori": ["commercio", "servizi", "manifatturiero", "turismo", "artigianato"],
+      "regioni": ["Lombardia"],
+      "dimensioni": ["micro", "piccola", "media"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Sede operativa in Lombardia", "tipo": "regione", "valore": ["Lombardia"]},
+        {"codice": "R2", "descrizione": "Essere una micro, piccola o media impresa", "tipo": "dimensione", "valore": ["micro", "piccola", "media"]},
+        {"codice": "R3", "descrizione": "Fatturato annuo non superiore a 50 milioni EUR", "tipo": "fatturato_max", "valore": 50000000}
+      ],
+      "spese_ammissibili": ["piattaforme e-commerce", "cybersecurity", "software gestionali", "cloud", "formazione digitale"],
+      "importo": "da 5.000 a 25.000 EUR",
+      "importo_max": 25000,
+      "scadenza": "2026-10-15",
+      "fonte_url": "https://www.regione.lombardia.it/imprese"
+    },
+    {
+      "id": "formazione-40",
+      "titolo": "Credito d'imposta Formazione 4.0",
+      "ente": "MIMIT",
+      "tipo": "credito d'imposta",
+      "descrizione": "Credito d'imposta per le spese di formazione del personale dipendente nelle tecnologie 4.0.",
+      "settori": ["tutti"],
+      "regioni": ["nazionale"],
+      "dimensioni": ["micro", "piccola", "media", "grande"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Impresa residente in Italia", "tipo": "regione", "valore": ["nazionale"]},
+        {"codice": "R2", "descrizione": "Presenza di personale dipendente da formare", "tipo": "manuale", "valore": null}
+      ],
+      "spese_ammissibili": ["docenza", "formazione dipendenti su tecnologie 4.0", "materiale didattico"],
+      "importo": "credito percentuale sulle spese di formazione",
+      "importo_max": 300000,
+      "scadenza": "2026-12-31",
+      "fonte_url": "https://www.mimit.gov.it/it/formazione40"
+    },
+    {
+      "id": "bando-turismo-veneto",
+      "titolo": "Bando Turismo Sostenibile - Veneto",
+      "ente": "Regione Veneto",
+      "tipo": "contributo a fondo perduto",
+      "descrizione": "Contributi per la riqualificazione e la sostenibilita delle strutture turistico-ricettive del Veneto.",
+      "settori": ["turismo"],
+      "regioni": ["Veneto"],
+      "dimensioni": ["micro", "piccola", "media"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Struttura ricettiva con sede in Veneto", "tipo": "regione", "valore": ["Veneto"]},
+        {"codice": "R2", "descrizione": "Operare nel settore turistico-ricettivo", "tipo": "settore", "valore": ["turismo"]},
+        {"codice": "R3", "descrizione": "Essere una PMI", "tipo": "dimensione", "valore": ["micro", "piccola", "media"]}
+      ],
+      "spese_ammissibili": ["efficientamento energetico", "ristrutturazioni", "accessibilita", "digitalizzazione dei servizi"],
+      "importo": "da 10.000 a 150.000 EUR",
+      "importo_max": 150000,
+      "scadenza": "2025-11-30",
+      "fonte_url": "https://www.regione.veneto.it/turismo"
+    },
+    {
+      "id": "on-nuove-imprese-tasso-zero",
+      "titolo": "ON - Oltre Nuove Imprese a Tasso Zero",
+      "ente": "Invitalia",
+      "tipo": "finanziamento agevolato a tasso zero + fondo perduto",
+      "descrizione": "Incentivo per micro e piccole imprese, in particolare a prevalenza giovanile o femminile, su tutto il territorio nazionale.",
+      "settori": ["tutti"],
+      "regioni": ["nazionale"],
+      "dimensioni": ["startup", "micro", "piccola"],
+      "requisiti": [
+        {"codice": "R1", "descrizione": "Micro o piccola impresa costituita da non piu di 60 mesi", "tipo": "anni_attivita_max", "valore": 5},
+        {"codice": "R2", "descrizione": "Compagine a prevalenza giovani (18-35) o donne", "tipo": "manuale", "valore": null},
+        {"codice": "R3", "descrizione": "Sede in Italia", "tipo": "regione", "valore": ["nazionale"]}
+      ],
+      "spese_ammissibili": ["opere murarie", "macchinari", "attrezzature", "software", "servizi"],
+      "importo": "fino a 3.000.000 EUR",
+      "importo_max": 3000000,
+      "scadenza": "2027-03-31",
+      "fonte_url": "https://www.invitalia.it/cosa-facciamo/creiamo-nuove-aziende/nuove-imprese-a-tasso-zero"
+    }
+  ]
+}

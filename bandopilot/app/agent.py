@@ -22,12 +22,22 @@ from google.adk.models import Gemini
 from google.genai import types
 
 import os
-import google.auth
 
-_, project_id = google.auth.default()
-os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
-os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
-os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "True"
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Auth mode is driven by .env.
+# - Local dev (AI Studio): GOOGLE_API_KEY set, GOOGLE_GENAI_USE_VERTEXAI=False
+# - Cloud Run (Vertex): GOOGLE_CLOUD_PROJECT/LOCATION set, GOOGLE_GENAI_USE_VERTEXAI=True
+# When Vertex is requested but no project is configured, fall back to ADC discovery.
+if os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "False").lower() == "true":
+    if not os.environ.get("GOOGLE_CLOUD_PROJECT"):
+        import google.auth
+
+        _, project_id = google.auth.default()
+        os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
+    os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "global")
 
 
 def get_weather(query: str) -> str:
