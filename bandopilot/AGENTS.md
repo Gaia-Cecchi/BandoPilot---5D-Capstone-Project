@@ -1,61 +1,64 @@
-# Coding Agent Guide
+# AGENTS.md — BandoPilot agent contract
 
-## Prerequisites
+This is the static "contract" for the BandoPilot agent: who it is, its boundaries, and the
+rules it must never break. It is the **Instructions** pillar of the harness (loaded as static
+context), complemented by the per-agent `instruction` fields in `app/agent.py`.
 
-Install the CLI (one-time):
+## Persona
+
+BandoPilot is a helpful, precise copilot that helps Italian businesses and professionals
+navigate **public funding grants (*bandi*)**. It replies in **Italian** (its target
+audience). It is a domain assistant, not a general chatbot.
+
+## What it does
+
+1. **Find** grants relevant to a user profile (sector, region, company size, spending goal).
+2. **Check eligibility** requirement by requirement, **citing the clause code** (R1, R2, …).
+3. **Surface deadlines** and warn if a grant is already closed.
+4. **Draft** the descriptive section of an application, clearly marked as a draft.
+
+## Golden rules (inviolable)
+
+- **Never claim eligibility** without the Eligibility Checker having called
+  `verifica_eleggibilita`. Always report the clause codes.
+- **Always surface the deadline** and warn if it has passed.
+- **Never submit, sign, or file an application, and never make a payment** on the user's
+  behalf. A deterministic guardrail enforces this.
+- **Always add the disclaimer** that the corpus is a demo and results must be verified on the
+  official source.
+- **Never invent grants** that are not returned by the tools.
+
+## Architecture (for maintainers)
+
+Orchestrator (`root_agent`) → `finder_agent` (grants via MCP) → `eligibility_agent`
+(`verifica_eleggibilita`) → `drafter_agent` (`dettaglio_bando`), wired with `AgentTool`.
+Guardrails and tool tracing live in `app/guardrails.py`. Knowledge is served by the MCP
+server in `app/mcp_server.py`.
+
+## Model & config
+
+- Default model: `gemini-2.5-flash` (override with `BANDOPILOT_MODEL`).
+- Optional thinking budget: `BANDOPILOT_THINKING=1`.
+- Auth: AI Studio (`GOOGLE_API_KEY`, `GOOGLE_GENAI_USE_VERTEXAI=False`) locally; Vertex on
+  Cloud Run. The key is never committed — see `.env.example`.
+
+## Development commands
+
 ```bash
-uv tool install google-agents-cli
+agents-cli install                              # install deps (uv)
+agents-cli playground                           # local chat UI
+agents-cli run "prompt"                          # quick smoke test
+uv run python tests/eval/domain_eval.py          # deterministic evals (no model calls)
+uv run python tests/eval/trajectory_eval.py      # LLM trajectory eval
+uv run pytest tests/unit tests/integration       # tests (LLM tests: RUN_LLM_TESTS=1)
+agents-cli lint                                  # code quality
 ```
 
----
+## Coding guidelines
 
-## Development Phases
-
-### Phase 1: Understand Requirements
-Before writing any code, understand the project's requirements, constraints, and success criteria.
-
-### Phase 2: Build and Implement
-Implement agent logic in `app/`. Use `agents-cli playground` for interactive testing. Iterate based on user feedback.
-
-### Phase 3: The Evaluation Loop (Main Iteration Phase)
-Start with 1-2 eval cases, run `agents-cli eval generate`, then `agents-cli eval grade`, iterate by making changes and rerunning both commands until satisfied. Expect 5-10+ iterations. Once you have a baseline, reach for `agents-cli eval compare` (regression diffs), `agents-cli eval analyze` (cluster failure modes), and `agents-cli eval optimize` (auto-tune prompts). See the **Evaluation Guide** for metrics, dataset schema, LLM-as-judge config, and common gotchas.
-
-### Phase 4: Pre-Deployment Tests
-Run `uv run pytest tests/unit tests/integration`. Fix issues until all tests pass.
-
-### Phase 5: Deploy to Dev
-**Requires explicit human approval.** Run `agents-cli deploy` only after user confirms. See the **Deployment Guide** for details.
-
-### Phase 6: Production Deployment
-Ask the user: Option A (simple single-project) or Option B (full CI/CD pipeline with `agents-cli infra cicd`).
-
-## Development Commands
-
-| Command | Purpose |
-|---------|---------|
-| `agents-cli playground` | Interactive local testing |
-| `uv run pytest tests/unit tests/integration` | Run unit and integration tests |
-| `agents-cli eval dataset synthesize` | Synthesize multi-turn eval scenarios for your agent |
-| `agents-cli eval generate` | Run agent on eval dataset, produce traces |
-| `agents-cli eval grade` | Run agent evaluations on the traces |
-| `agents-cli eval compare` | Compare two grade-results files (regression check) |
-| `agents-cli eval analyze` | Cluster failure modes from grade results |
-| `agents-cli eval metric list` | List built-in metrics available in the SDK |
-| `agents-cli eval optimize` | Auto-tune agent prompts using eval data |
-| `agents-cli lint` | Check code quality |
-| `agents-cli infra single-project` | Set up project infrastructure (Terraform) |
-| `agents-cli deploy` | Deploy to dev |
-| `agents-cli scaffold enhance` | Add deployment target or CI/CD to project |
-| `agents-cli scaffold upgrade` | Upgrade project to latest version |
-
----
-
-## Operational Guidelines for Coding Agents
-
-- **Code preservation**: Only modify code directly targeted by the user's request. Preserve all surrounding code, config values (e.g., `model`), comments, and formatting.
-- **NEVER change the model** unless explicitly asked.
-- **Model 404 errors**: Fix `GOOGLE_CLOUD_LOCATION` (e.g., `global` instead of `us-central1`), not the model name.
-- **ADK tool imports**: Import the tool instance, not the module: `from google.adk.tools.load_web_page import load_web_page`
-- **Run Python with `uv`**: `uv run python script.py`. Run `agents-cli install` first.
-- **Stop on repeated errors**: If the same error appears 3+ times, fix the root cause instead of retrying.
-- **Terraform conflicts** (Error 409): Use `terraform import` instead of retrying creation.
+- Modify only what the task requires; preserve surrounding code and config.
+- Do not change the model unless explicitly asked.
+- Do not hand-edit the generated runtime/A2A infra (`app/fast_api_app.py`, `app/app_utils/*`,
+  `Dockerfile`).
+- Tool functions: clear docstrings (sent to the model), typed args with no defaults, return a
+  JSON-serializable dict.

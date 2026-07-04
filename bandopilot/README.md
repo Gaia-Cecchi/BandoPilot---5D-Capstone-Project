@@ -1,93 +1,75 @@
-# bandopilot
+# BandoPilot — ADK agent
 
-Simple ReAct agent
-Agent generated with `agents-cli` version `0.6.1`
-
-## Project Structure
-
-```
-bandopilot/
-├── app/         # Core agent code
-│   ├── agent.py               # Main agent logic
-│   ├── fast_api_app.py        # FastAPI Backend server
-│   └── app_utils/             # App utilities and helpers
-├── tests/                     # Unit, integration, and load tests
-├── GEMINI.md                  # AI-assisted development guide
-└── pyproject.toml             # Project dependencies
-```
-
-> 💡 **Tip:** Use [Antigravity CLI](https://antigravity.google/) for AI-assisted development - project context is pre-configured in `GEMINI.md`.
+Multi-agent copilot for Italian public grants, built on the Google Agent Development Kit.
+For the project overview, architecture, and eval results see the [root README](../README.md)
+and the [capstone writeup](../SUBMISSION.md). This file is the developer guide.
 
 ## Requirements
 
-Before you begin, ensure you have:
-- **uv**: Python package manager (used for all dependency management in this project) - [Install](https://docs.astral.sh/uv/getting-started/installation/) ([add packages](https://docs.astral.sh/uv/concepts/dependencies/) with `uv add <package>`)
-- **agents-cli**: Agents CLI - Install with `uv tool install google-agents-cli`
-- **Google Cloud SDK**: For GCP services - [Install](https://cloud.google.com/sdk/docs/install)
+- **uv** — Python package manager ([install](https://docs.astral.sh/uv/getting-started/installation/))
+- **agents-cli** — `uv tool install google-agents-cli`
+- **Google Cloud SDK** — only needed for deployment
 
-
-## Quick Start
-
-Install `agents-cli` and its skills if not already installed:
+## Setup
 
 ```bash
-uvx google-agents-cli setup
+cp .env.example .env      # add your GOOGLE_API_KEY from https://aistudio.google.com/apikey
+agents-cli install        # install dependencies with uv
+agents-cli playground     # local chat UI (auto-reloads on save)
 ```
-
-Install required packages:
-
-```bash
-agents-cli install
-```
-
-Test the agent with a local web server:
-
-```bash
-agents-cli playground
-```
-
-You can also use features from the [ADK](https://adk.dev/) CLI with `uv run adk`.
 
 ## Commands
 
-| Command              | Description                                                                                 |
-| -------------------- | ------------------------------------------------------------------------------------------- |
-| `agents-cli install` | Install dependencies using uv                                                         |
-| `agents-cli playground` | Launch local development environment                                                  |
-| `agents-cli lint`    | Run code quality checks                                                               |
-| `agents-cli eval`    | Evaluate agent behavior (generate, grade, analyze, and more — see `agents-cli eval --help`) |
-| `uv run pytest tests/unit tests/integration` | Run unit and integration tests                                                        |
-| `agents-cli deploy`  | Deploy agent to Cloud Run                                                                   || [A2A Inspector](https://github.com/a2aproject/a2a-inspector) | Launch A2A Protocol Inspector                                                        |
+| Command | Description |
+|---|---|
+| `agents-cli playground` | Local chat UI |
+| `agents-cli run "prompt"` | One-shot smoke test |
+| `uv run python tests/eval/domain_eval.py` | Deterministic evals (eligibility + retrieval), no model calls |
+| `uv run python tests/eval/trajectory_eval.py` | LLM trajectory eval via the ADK Runner |
+| `uv run pytest tests/unit tests/integration` | Tests (LLM tests are opt-in: `RUN_LLM_TESTS=1`) |
+| `agents-cli lint` | Code quality checks |
 
-## 🛠️ Project Management
+## Configuration (env)
 
-| Command | What It Does |
-|---------|--------------|
-| `agents-cli scaffold enhance` | Add CI/CD pipelines and Terraform infrastructure |
-| `agents-cli infra cicd` | One-command setup of entire CI/CD pipeline + infrastructure |
-| `agents-cli scaffold upgrade` | Auto-upgrade to latest version while preserving customizations |
+| Variable | Purpose | Default |
+|---|---|---|
+| `GOOGLE_API_KEY` | AI Studio key (local dev) | — |
+| `GOOGLE_GENAI_USE_VERTEXAI` | `False` = AI Studio, `True` = Vertex (Cloud Run) | `False` |
+| `BANDOPILOT_MODEL` | Model override | `gemini-2.5-flash` |
+| `BANDOPILOT_THINKING` | `1` enables a thinking budget | `0` |
 
----
+## Project structure
 
-## Development
-
-Edit your agent logic in `app/agent.py` and test with `agents-cli playground` - it auto-reloads on save.
-
-## Deployment
-
-```bash
-gcloud config set project <your-project-id>
-agents-cli deploy
+```
+app/
+├── agent.py          # Orchestrator + Finder/Eligibility/Drafter sub-agents + guardrails
+├── bandi_data.py     # Deterministic domain logic (search / eligibility / deadline)
+├── tools.py          # ADK function tools (verifica_eleggibilita, dettaglio_bando)
+├── mcp_server.py     # MCP server (FastMCP, stdio) exposing the grants corpus
+├── guardrails.py     # Forbidden-action block + tool tracing
+├── data/bandi.json   # Curated demo corpus (12 grants)
+└── fast_api_app.py   # FastAPI / A2A server (generated)
+tests/
+├── unit/ integration/  # pytest
+└── eval/               # domain_eval, trajectory_eval, eval_config, labeled datasets
+deployment/terraform/   # Cloud Run infrastructure
 ```
 
-To add CI/CD and Terraform, run `agents-cli scaffold enhance`.
-To set up your production infrastructure, run `agents-cli infra cicd`.
+## Deployment (Cloud Run)
 
-## Observability
+```bash
+gcloud config set project <YOUR_PROJECT_ID>
+agents-cli deploy \
+  --secrets GOOGLE_API_KEY=bandopilot-api-key \
+  --update-env-vars GOOGLE_GENAI_USE_VERTEXAI=False \
+  --min-instances 0
+```
 
-Built-in telemetry exports to Cloud Trace, BigQuery, and Cloud Logging.
+The API key is injected from **Secret Manager**; `min-instances 0` keeps idle cost near zero.
+Native telemetry exports to Cloud Trace, BigQuery, and Cloud Logging.
 
-## A2A Inspector
+## A2A
 
-This agent supports the [A2A Protocol](https://a2a-protocol.org/). Use the [A2A Inspector](https://github.com/a2aproject/a2a-inspector) to test interoperability.
-See the [A2A Inspector docs](https://github.com/a2aproject/a2a-inspector) for details.
+The agent is served as an A2A service. Inspect the Agent Card at
+`/<host>/a2a/app/.well-known/agent-card.json` or use the
+[A2A Inspector](https://github.com/a2aproject/a2a-inspector).

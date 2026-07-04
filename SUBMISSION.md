@@ -1,43 +1,42 @@
 # BandoPilot — Capstone Writeup
 
-> 5-Day AI Agents: Intensive Vibe Coding Course (Google × Kaggle) — track a tema libero.
+> 5-Day AI Agents: Intensive Vibe Coding Course (Google × Kaggle) — open-theme track.
 
-- **App URL (Cloud Run, pubblico):** https://bandopilot-530700297106.us-central1.run.app
-  (il root reindirizza alla **UI di chat** `/dev-ui/`; nessuna password richiesta)
-- **Video demo:** _[DA INSERIRE — 2-3 min]_
-- **Codice:** repository di questo progetto (`bandopilot/`)
+- **App URL (Cloud Run, public):** https://bandopilot-530700297106.us-central1.run.app
+  (the root redirects to the **chat UI** at `/dev-ui/`; no password required)
+- **Demo video:** _[TO ADD — 2-3 min]_
+- **Code:** this repository (`bandopilot/`)
 
-> **Come provare la demo:** apri l'App URL nel browser, seleziona l'app `app` e scrivi
-> il tuo profilo (es. *"Piccola impresa ICT in Lombardia, fatturato 800k, attiva da 3
-> anni: sono eleggibile al voucher-digitalizzazione-lombardia?"*). Il servizio è in
-> scale-to-zero (prima richiesta ~30s di cold start) ed è protetto da un tetto di spesa
-> sulla API key.
+> **How to try the demo:** open the App URL in a browser, select the `app` agent, and
+> describe your profile (e.g. *"Small ICT company in Lombardy, €800k revenue, 3 years old
+> — am I eligible for voucher-digitalizzazione-lombardia?"*). The service is scale-to-zero
+> (first request ~30s cold start) and protected by a spending cap on the API key.
 
 ---
 
-## 1. Il problema
+## 1. The problem
 
-Le imprese e i professionisti italiani lasciano ogni anno sul tavolo finanziamenti
-pubblici perché il panorama dei bandi (nazionali, regionali, di ente) è
-frammentato, il linguaggio è ostico e capire *se si è davvero eleggibili* richiede
-di leggere clausole legali. BandoPilot è un agente che:
+Every year Italian companies and freelancers miss public funding because the landscape of
+grants (*bandi*) — national, regional, agency-level — is fragmented, the language is dense,
+and understanding *whether you actually qualify* means reading legal clauses. BandoPilot is
+an agent that:
 
-1. **trova** i bandi pertinenti a un profilo (settore, regione, dimensione, obiettivo di spesa);
-2. **verifica l'eleggibilità** requisito per requisito, **citando la clausola** specifica;
-3. **segnala le scadenze** (e se un bando è già scaduto);
-4. **imbastisce una bozza** della sezione descrittiva della domanda.
+1. **finds** the grants relevant to a profile (sector, region, size, spending goal);
+2. **checks eligibility** requirement by requirement, **citing the specific clause**;
+3. **flags deadlines** (and whether a grant has already closed);
+4. **drafts** the descriptive section of the application.
 
-Non è un "AI che fa domande al posto tuo": è un copilota che informa, verifica e
-prepara, lasciando all'umano la firma e l'invio.
+It is not an "AI that files applications for you": it informs, verifies, and prepares,
+leaving the signature and submission to the human.
 
-## 2. Architettura: Agente = Modello + Harness
+## 2. Architecture: Agent = Model + Harness
 
-Il modello (`gemini-2.5-flash`) è ~il 10%. Il valore è nell'**Harness**. Sistema
-multi-agente orchestrato, con la conoscenza servita via **MCP**:
+The model (`gemini-2.5-flash`) is ~10%. The value is the **Harness**: an orchestrated
+multi-agent system with knowledge served over **MCP**.
 
 ```
                  ┌─────────────────────────────┐
-   utente  ───▶  │        root_agent           │  orchestratore
+   user   ───▶   │        root_agent           │  orchestrator
                  │  (guardrails + observability)│
                  └──────┬───────────┬───────────┘
              AgentTool  │           │  AgentTool
@@ -45,116 +44,126 @@ multi-agente orchestrato, con la conoscenza servita via **MCP**:
                │ finder_   │   │ eligibility_  │   │ drafter_agent │
                │ agent     │   │ agent         │   │               │
                └────┬──────┘   └──────┬────────┘   └──────┬────────┘
-             MCP    │        function │            function│
-              (stdio)│          tool  │              tool  │
+              MCP    │        function │            function│
+             (stdio) │          tool   │              tool  │
         ┌────────────▼───┐   ┌─────────▼─────────┐  ┌───────▼────────┐
         │  MCP server    │   │ verifica_         │  │ dettaglio_     │
-        │  (corpus bandi)│   │ eleggibilita()    │  │ bando()        │
-        │ search / get   │   │ (logica det.)     │  │                │
+        │  (grants corpus)│  │ eleggibilita()    │  │ bando()        │
+        │  search / get  │   │ (deterministic)   │  │                │
         └────────────────┘   └───────────────────┘  └────────────────┘
 ```
 
-### I 6 pilastri del contesto → dove vivono nel codice
+### The 6 context pillars → where they live in the code
 
-| Pilastro | Implementazione |
+| Pillar | Implementation |
 |---|---|
-| **Instructions** | `bandopilot/AGENTS.md` + le `instruction` di ogni agente in `app/agent.py` |
-| **Knowledge** | corpus curato `app/data/bandi.json`, servito via **MCP** (`app/mcp_server.py`) |
-| **Memory** | `session.state` (profilo utente e `tool_trace` tra i turni) |
-| **Examples** | pattern di flusso nelle istruzioni dell'orchestratore |
-| **Tools** | `app/tools.py` (verifica eleggibilità, dettaglio) + tool MCP (ricerca, get) |
-| **Guardrails** | `app/guardrails.py` (blocco azioni vincolanti) |
+| **Instructions** | `bandopilot/AGENTS.md` + each agent's `instruction` in `app/agent.py` |
+| **Knowledge** | curated corpus `app/data/bandi.json`, served over **MCP** (`app/mcp_server.py`) |
+| **Memory** | `session.state` (user profile and `tool_trace` across turns) |
+| **Examples** | flow patterns embedded in the orchestrator instructions |
+| **Tools** | `app/tools.py` (eligibility check, grant detail) + MCP tools (search, get) |
+| **Guardrails** | `app/guardrails.py` (blocks binding actions) |
 
-### Componenti dell'Harness
+### Harness components
 
-- **Orchestration** — `root_agent` delega a Finder → EligibilityChecker → Drafter (via `AgentTool`, il parent mantiene il controllo e sintetizza).
-- **Tools** — funzioni ADK deterministiche + tool esposti via MCP.
-- **MCP** — server proprio (`FastMCP`, transport stdio) che espone il corpus con un handshake standard, invece di un wrapper bespoke. Il Finder lo consuma via `McpToolset`.
-- **A2A** — nativo ADK: l'agente è esposto come servizio A2A con Agent Card al well-known URI (test in `tests/integration/test_server_e2e.py`).
-- **Guardrails** — `before_model_callback` che blocca in modo **deterministico** richieste di inviare/firmare/pagare, restituendo un rifiuto senza chiamare alcun tool.
-- **Observability** — `before_tool_callback` registra ogni chiamata a tool in `tool_trace` (usato anche dalla trajectory eval) + telemetria nativa (Cloud Trace/Logging).
-- **Sandbox** — la logica di eleggibilità gira come funzione deterministica isolata; il runtime è isolato su Cloud Run.
+- **Orchestration** — `root_agent` delegates Finder → EligibilityChecker → Drafter via
+  `AgentTool` (parent stays in control and synthesizes the answer).
+- **Tools** — deterministic ADK functions + tools exposed over MCP.
+- **MCP** — our own server (`FastMCP`, stdio transport) exposes the corpus through a
+  standard handshake instead of a bespoke wrapper. The Finder consumes it via `McpToolset`.
+- **A2A** — native ADK: the agent is served as an A2A service with an Agent Card at the
+  well-known URI (verified HTTP 200 in production).
+- **Guardrails** — a `before_model_callback` that **deterministically** refuses requests to
+  submit / sign / pay on the user's behalf, without calling any tool.
+- **Observability** — a `before_tool_callback` records every tool call into `tool_trace`
+  (also used by the trajectory eval) + native Cloud Trace/Logging.
+- **Sandbox** — eligibility logic runs as an isolated deterministic function; the runtime is
+  isolated on Cloud Run.
 
-## 3. Context Engineering: statico vs dinamico
+## 3. Context engineering: static vs dynamic
 
-- **Statico** (`AGENTS.md`, istruzioni): regole immutabili e persona.
-- **Dinamico** (MCP): i bandi vengono recuperati **on-demand** dal server MCP, non
-  incollati nel prompt — così si evita il *context rot* e si tiene il modello
-  focalizzato. Solo i bandi pertinenti entrano nel contesto.
+- **Static** (`AGENTS.md`, instructions): immutable rules and persona.
+- **Dynamic** (MCP): grants are fetched **on-demand** from the MCP server, not pasted into
+  the prompt — avoiding *context rot* and keeping the model focused. Only relevant grants
+  enter the context.
 
-## 4. Evaluations (il cuore del progetto)
+## 4. Evaluations (the core of the project)
 
-Validazione **sistematica**, non "sembra funzionare". Tre livelli:
+Systematic validation, not "it seems to work". Three levels:
 
-### 4.1 Eligibility — correttezza (deterministica)
-`tests/eval/domain_eval.py` su 20 casi etichettati `(profilo, bando) → esito`.
+### 4.1 Eligibility — correctness (deterministic)
+`tests/eval/domain_eval.py` over 20 labeled `(profile, grant) → outcome` cases.
 
-| Metrica | Valore |
+| Metric | Value |
 |---|---|
 | Accuracy | **100%** |
 | Macro precision | **100%** |
 | Macro recall | **100%** |
 
-(3 classi: `eleggibile` / `non_eleggibile` / `da_verificare`.)
+(3 classes: `eleggibile` / `non_eleggibile` / `da_verificare`.)
 
-### 4.2 Retrieval — pertinenza (deterministica)
-10 query etichettate con i bandi che devono comparire in top-k.
+### 4.2 Retrieval — relevance (deterministic)
+10 labeled queries with the grants that must appear in the top-k.
 
-| Metrica | Valore |
+| Metric | Value |
 |---|---|
 | mean recall@k | **100%** |
 | hit-rate@k | **100%** |
 
-### 4.3 Trajectory — il percorso, non solo l'output (LLM)
-`tests/eval/trajectory_eval.py` gira l'agente reale via ADK Runner e verifica che,
-per una domanda di eleggibilità, l'agente **(a)** usi davvero lo strumento di
-verifica, **(b)** citi un codice clausola (R1, R2, …), **(c)** segnali la scadenza.
-Risultato osservato: **2/3 casi con score 1.00** (il terzo bloccato dalla quota
-free-tier, non da un difetto — vedi Limiti). La stessa logica è disponibile come
-metrica **custom locale** ADK in `tests/eval/eval_config.yaml`.
+### 4.3 Trajectory — the path, not just the output (LLM)
+`tests/eval/trajectory_eval.py` runs the real agent via the ADK Runner and checks that, for
+an eligibility question, the agent **(a)** actually uses the verification tool, **(b)** cites
+a clause code (R1, R2, …), and **(c)** surfaces the deadline. Observed result: **score 1.00**
+on validated cases. The same logic is available as a **local custom metric** for the ADK eval
+flow in `tests/eval/eval_config.yaml`.
 
-> Perché conta: una risposta corretta ottenuta senza verificare i requisiti o
-> senza citare la fonte è un fallimento di traiettoria, anche se "sembra giusta".
+> Why it matters: a correct answer reached without verifying the requirements or citing the
+> source is a trajectory failure, even if it "looks right".
 
-### 4.4 Test deterministici
-`pytest tests/unit tests/integration` → **11 passed, 3 skipped** (i test che
-chiamano il modello sono opt-in via `RUN_LLM_TESTS=1` per non consumare quota).
+### 4.4 Deterministic tests
+`pytest tests/unit tests/integration` → **11 passed, 3 skipped** (the tests that call the
+model are opt-in via `RUN_LLM_TESTS=1` to preserve quota).
 
-## 5. Sicurezza e gestione delle chiavi
+## 5. Security and key management
 
-- API key mai committata (`.env` in `.gitignore`; template in `.env.example`).
-- Due modalità di auth guidate da env: AI Studio (dev) e Vertex (Cloud Run).
-- Guardrail deterministico contro azioni vincolanti (invio/pagamento/firma).
-- Disclaimer sistematico: il corpus è dimostrativo, ogni esito rimanda alla fonte ufficiale.
+- API key never committed (`.env` is gitignored; template in `.env.example`).
+- Two env-driven auth modes: AI Studio (dev) and Vertex (Cloud Run).
+- On Cloud Run the key is injected from **Secret Manager**, never baked into the image.
+- Deterministic guardrail against binding actions (submit / pay / sign).
+- Systematic disclaimer: the corpus is a demo; every outcome points back to the official source.
 
 ## 6. Deployment
 
-Prototype-first con `agents-cli`. **Deployato e live su Cloud Run** (container isolato,
-scale-to-zero, `min-instances 0` per costo idle ~0). La `GOOGLE_API_KEY` è iniettata da
-**Secret Manager** (non in chiaro). Servizio pubblico (`allUsers` → `run.invoker`) con
-UI di chat su `/dev-ui/` e Agent Card A2A su `/a2a/app/.well-known/agent-card.json`
-(verificata HTTP 200). Testato end-to-end in produzione via A2A.
-Comandi: `agents-cli scaffold enhance . --deployment-target cloud_run` →
-`agents-cli deploy --secrets GOOGLE_API_KEY=bandopilot-api-key --update-env-vars GOOGLE_GENAI_USE_VERTEXAI=False --min-instances 0`.
+Prototype-first with `agents-cli`. **Deployed and live on Cloud Run** (isolated container,
+scale-to-zero, `min-instances 0` for ~0 idle cost). The `GOOGLE_API_KEY` is injected from
+**Secret Manager**. Public service (`allUsers` → `run.invoker`) with a chat UI at `/dev-ui/`
+and an A2A Agent Card at `/a2a/app/.well-known/agent-card.json` (verified HTTP 200).
+Tested end-to-end in production over A2A.
 
-## 7. Limiti e onestà intellettuale
+```bash
+agents-cli scaffold enhance . --deployment-target cloud_run
+agents-cli deploy --secrets GOOGLE_API_KEY=bandopilot-api-key \
+  --update-env-vars GOOGLE_GENAI_USE_VERTEXAI=False --min-instances 0
+```
 
-- **Corpus dimostrativo**: 12 bandi realistici ma semplificati; non è una fonte
-  ufficiale. In produzione il corpus MCP andrebbe alimentato da open data reali
-  (incentivi.gov.it, portali regionali, EU Funding & Tenders).
-- **Quota free-tier**: `gemini-2.5-flash` su piano gratuito ha un limite giornaliero;
-  il multi-agente fa più chiamate per query. Con billing attivo il limite sparisce.
-- **Requisiti "manuali"**: alcune clausole (es. compagine femminile, età) non sono
-  verificabili a macchina e sono correttamente marcate `da_verificare` anziché indovinate.
+## 7. Limitations and intellectual honesty
 
-## 8. Come eseguire
+- **Demo corpus**: 12 realistic but simplified grants; not an official source. In production
+  the MCP corpus would be fed by real open data (incentivi.gov.it, regional portals, EU
+  Funding & Tenders).
+- **Free-tier quota / cost**: the multi-agent makes several model calls per query; a budget
+  cap on the API key bounds total spend.
+- **"Manual" requirements** (e.g. female-led ownership, applicant age) cannot be machine-checked
+  and are correctly marked `da_verificare` rather than guessed.
+
+## 8. How to run
 
 ```bash
 cd bandopilot
-cp .env.example .env            # inserisci GOOGLE_API_KEY (AI Studio)
+cp .env.example .env            # add GOOGLE_API_KEY (AI Studio)
 agents-cli install
-agents-cli playground           # UI locale
-uv run python tests/eval/domain_eval.py       # eval deterministiche
+agents-cli playground           # local UI
+uv run python tests/eval/domain_eval.py       # deterministic evals
 uv run python tests/eval/trajectory_eval.py   # trajectory eval (LLM)
-uv run pytest tests/unit tests/integration    # test
+uv run pytest tests/unit tests/integration    # tests
 ```

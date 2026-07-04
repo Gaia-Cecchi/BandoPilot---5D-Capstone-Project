@@ -1,167 +1,99 @@
-# AGENT INSTRUCTIONS — BandoPilot (Capstone Kaggle AI Agents)
+# AGENT INSTRUCTIONS — BandoPilot (Kaggle AI Agents Capstone)
 
-> **Per tutti i coding agent** (Claude, Gemini, Copilot, DeepSeek, etc.)
-> che lavorano su questo repository.
->
-> Leggi **SEMPRE** questo file prima di iniziare qualsiasi task.
-> Aggiornalo se trovi nuove best practice o correzioni.
+> For any coding agent working on this repository.
+> **Always read this file before starting any task.** Update it when you find new best
+> practices or corrections.
 
 ---
 
-## 0. Cos'e questo progetto
+## 0. What this project is
 
-**BandoPilot** e il capstone project per il corso Kaggle/Google *"5-Day AI Agents: Intensive Vibe Coding"* (track a tema libero).
+**BandoPilot** is the capstone for the *5-Day AI Agents: Intensive Vibe Coding* course
+(Google × Kaggle), open-theme track.
 
-E un **agente multi-agente in ADK** (Google Agent Development Kit, Python) che:
-1. **Trova** bandi/finanziamenti pubblici italiani pertinenti a un profilo (settore, regione, dimensione, obiettivo di spesa).
-2. **Verifica l'eleggibilita** citando sempre la clausola specifica del bando.
-3. **Segnala le scadenze**.
-4. **Imbastisce una bozza** della sezione descrittiva della domanda.
+It is a **multi-agent system in ADK** (Google Agent Development Kit, Python) that:
+1. **finds** Italian public grants relevant to a profile;
+2. **checks eligibility** requirement by requirement, **citing the clause**;
+3. **flags deadlines**;
+4. **drafts** the descriptive section of the application.
 
-Architettura: Orchestrator -> `Finder` -> `EligibilityChecker` -> `Drafter`.
+Architecture: orchestrator (`root_agent`) → `finder_agent` (grants via MCP) →
+`eligibility_agent` → `drafter_agent`. The badge value is in the **rigor of the harness and
+the evals**, not the UI.
 
-Il valore per il badge non sta nella UI, ma nel **rigore del Harness e delle Evals**.
+## 1. Capstone requirements (checklist)
 
----
+- [x] **AGENTS.md** (agent contract) — `bandopilot/AGENTS.md`.
+- [x] Explicit **harness**: tools, sandbox, guardrails, observability, orchestration.
+- [x] At least one **MCP server** (`app/mcp_server.py`).
+- [x] **A2A** interaction — native to ADK.
+- [x] Systematic **eval** suite with labeled datasets + **trajectory eval**.
+- [x] **Cloud Run** deployment with secure key management (Secret Manager).
+- [x] Kaggle deliverables: **writeup** (`SUBMISSION.md`) + **video script** + code link.
+- [ ] Record the **video** and submit on Kaggle (user).
 
-## 1. Requisiti del capstone (checklist da soddisfare)
+Deadline: **6 July 2026**.
 
-- [x] File **AGENTS.md** (contratto dell'agente) — in `bandopilot/AGENTS.md`.
-- [ ] **Harness** esplicito: Tools, Sandbox, Guardrails, Observability, Orchestration.
-- [ ] Almeno un **server MCP** (espone il corpus bandi: `search_bandi`, `get_bando`).
-- [ ] Interazione **A2A** — gia integrata nativamente da ADK (`is_a2a: true`).
-- [ ] Suite di **Evals** sistematica con dataset etichettati + **trajectory eval**.
-- [ ] Deploy su **Cloud Run** con gestione sicura delle API key.
-- [ ] Deliverable Kaggle: **writeup + video + rationale + link codice**.
+## 2. Workflow
 
-Le 3 eval previste:
-1. **Eligibility** precision/recall (~20 coppie `(profilo, bando)` etichettate).
-2. **Retrieval** relevance@k (~15 query -> bandi attesi in top-k).
-3. **Trajectory**: l'agente ha citato la fonte prima di asserire eleggibilita? ha controllato la scadenza?
+### 2.1 Before starting
+1. Read `agent_base/HISTORY.md` (log, decisions, known issues).
+2. Read `agent_base/CODEBASE_STRUCTURE.md` (file map).
+3. Read `bandopilot/README.md` and `bandopilot/AGENTS.md`.
+4. Run `git status` and `git log --oneline -5`.
 
-**Deadline: 6 luglio 2026** -> scope MVP strettissimo. Se qualcosa salta, salta dal fondo della lista, MAI dalle Evals.
-
----
-
-## 2. Workflow obbligatorio (IN ORDINE)
-
-### 2.1 Prima di iniziare
-1. **Leggi `agent_base/HISTORY.md`** — storico, decisioni, bug noti, fasi completate.
-2. **Leggi `agent_base/CODEBASE_STRUCTURE.md`** — mappa aggiornata della struttura.
-3. **Leggi `bandopilot/README.md`** e **`bandopilot/AGENTS.md`**.
-4. **Fai `git status` e `git log --oneline -5`** per capire lo stato attuale.
-
-### 2.2 Durante il lavoro
-5. **Commit atomici** — un commit = una feature/fix/refactor. Non accumulare modifiche eterogenee.
-6. **Loop di sviluppo ADK** (dalla dir `bandopilot/`):
-   ```bash
-   agents-cli install                              # installa deps con uv (una tantum / dopo add)
-   agents-cli playground                           # test interattivo locale
-   agents-cli eval generate && agents-cli eval grade   # loop di valutazione (fase principale)
-   uv run pytest tests/unit tests/integration      # test pre-deploy
-   agents-cli lint                                 # qualita del codice
-   ```
-   Se `pytest` o `lint` falliscono, NON procedere finche non e fixato.
-7. **Mai interrompere il flusso** — se trovi un problema, risolvilo e continua. Chiedi conferma solo per scelte architetturali davvero ambigue.
-
-### 2.3 Al termine di ogni task
-8. **Commit (SOLO git locale, niente GitHub / niente push):**
-   ```bash
-   git add <files>
-   git commit -m "tipo: descrizione breve senza apostrofi"
-   ```
-   ⚠️ **MAI apostrofi nei commit message** — rompono bash heredoc.
-   ⚠️ **NIENTE `git push` / niente remote** — per ora si lavora solo con git locale.
-9. **Aggiorna `agent_base/HISTORY.md`** con stato, cosa e stato fatto, nuovi bug noti.
-10. **Aggiorna `agent_base/CODEBASE_STRUCTURE.md`** se hai creato/spostato/rinominato file.
-11. **Aggiorna `bandopilot/README.md`** se hai cambiato deps, comandi o funzionalita.
-
----
-
-## 3. Regole di codice (ADK / Python)
-
-### 3.1 Preservazione del codice
-- **Modifica solo cio che il task richiede.** Preserva codice, config (specialmente `model`), commenti e formattazione circostanti.
-- **NON cambiare MAI il modello** (`gemini-2.5-flash`) se non esplicitamente richiesto.
-- **Non riscrivere a mano il layer A2A** ne l'infra runtime generata (`app/fast_api_app.py`, `app/app_utils/*`, `Dockerfile`): sono cablati dallo scaffold.
-
-### 3.2 Convenzioni
-- **Segui le convenzioni esistenti** — guarda il codice circostante prima di scrivere.
-- **Import dei tool ADK**: importa l'istanza del tool, non il modulo (es. `from google.adk.tools.load_web_page import load_web_page`).
-- **Esegui Python con `uv`**: `uv run python script.py` (dopo `agents-cli install`).
-- **Aggiungi pacchetti** con `uv add <pkg>` (non pip diretto).
-- **Stop dopo 3 errori uguali**: se lo stesso errore si ripete 3+ volte, fixa la causa radice invece di ritentare.
-
-### 3.3 Gemini API — minimizzare costi
-- **Modello primario**: `gemini-2.5-flash` (default per TUTTO; scelto per costo contenuto).
-- **Model routing**: usa modelli piu potenti solo dove serve ragionamento architetturale; task deterministici (estrazione, check) restano sul flash.
-- **Errore 404 sul modello**: NON cambiare il nome del modello, correggi `GOOGLE_CLOUD_LOCATION` (es. `global`).
-
-### 3.4 API key e sicurezza
-- **Mai committare chiavi**: le API key vanno in `bandopilot/.env` (gia in `.gitignore`).
-- Per lo sviluppo locale si puo usare la chiave Google AI Studio (`GOOGLE_API_KEY`, `GOOGLE_GENAI_USE_VERTEXAI=False`); per Cloud Run si usa Vertex/ADC.
-
----
-
-## 4. Struttura del progetto
-
-```
-capstoneproject_kagglecourse/
-├── agent_base/                ← Istruzioni e documentazione per AI agents
-│   ├── AGENT_INSTRUCTIONS.md    ← Questo file
-│   ├── HISTORY.md               ← Storico completo del progetto
-│   └── CODEBASE_STRUCTURE.md    ← Mappa dei file e delle directory
-├── kaggle-instructions/       ← Report/linee guida del corso (contesto)
-└── bandopilot/                ← Progetto ADK (l'agente vero e proprio)
-    ├── AGENTS.md                ← Contratto dell'agente (deliverable capstone)
-    ├── agents-cli-manifest.yaml ← Config CLI (NON editare a mano)
-    ├── app/
-    │   ├── agent.py             ← Logica agente (instruction, tools, model)
-    │   ├── fast_api_app.py      ← Server FastAPI (generato, non toccare)
-    │   └── app_utils/           ← A2A, services, telemetry (generato)
-    ├── tests/
-    │   ├── unit/ integration/   ← pytest
-    │   └── eval/                ← dataset e config delle Evals
-    ├── Dockerfile               ← (generato)
-    └── pyproject.toml
-```
-
----
-
-## 5. Comandi rapidi
-
+### 2.2 During work (from `bandopilot/`)
 ```bash
-cd "/home/gaia-cecchi/Desktop/Projects/Altre API etc/capstoneproject_kagglecourse/bandopilot"
-
-# Sviluppo ADK
-agents-cli install                              # deps via uv
-agents-cli playground                           # UI locale di test
-agents-cli run "prompt di prova"                # smoke test rapido
-agents-cli eval generate && agents-cli eval grade   # loop di valutazione
-uv run pytest tests/unit tests/integration      # test
-agents-cli lint                                 # qualita codice
-
-# Deploy (solo dopo conferma umana)
-agents-cli scaffold enhance . --deployment-target cloud_run
-agents-cli deploy
-
-# Git (SOLO locale, MAI push, MAI apostrofi nei messaggi)
-git status
-git log --oneline -10
-git commit -m "tipo: descrizione"
+agents-cli install                              # install deps (uv)
+agents-cli playground                           # local test UI
+agents-cli run "prompt"                          # quick smoke test
+uv run python tests/eval/domain_eval.py          # deterministic evals (no model calls)
+uv run pytest tests/unit tests/integration       # tests
+agents-cli lint                                  # code quality
 ```
+- **Atomic commits** — one logical change per commit.
+- If `pytest` or `lint` fail, fix before proceeding.
+
+### 2.3 Ending a task
+```bash
+git add <files>
+git commit -m "type: short message without apostrophes"
+git push origin main
+```
+- ⚠️ **Never put Claude (or any AI) among the commit authors.** Author = Gaia Cecchi only.
+  Do **not** add any `Co-Authored-By` trailer.
+- ⚠️ **No apostrophes** in commit messages (they break bash heredoc).
+- Update `HISTORY.md` and `CODEBASE_STRUCTURE.md`; update `README.md` if deps/commands/features changed.
+
+## 3. Code rules (ADK / Python)
+
+- **Only modify what the task requires.** Preserve surrounding code, config (especially the
+  model), comments, formatting.
+- **Never change the model** (`gemini-2.5-flash`) unless explicitly asked. Override via
+  `BANDOPILOT_MODEL` env instead.
+- **Do not hand-edit** the generated runtime/A2A infra (`app/fast_api_app.py`,
+  `app/app_utils/*`, `Dockerfile`).
+- ADK tool imports: import the tool instance, not the module.
+- Run Python with `uv run`; add packages with `uv add`.
+- Stop and fix the root cause if the same error appears 3+ times.
+- **Model 404**: fix `GOOGLE_CLOUD_LOCATION` (e.g. `global`), not the model name.
+
+## 4. Keys & security (public repo)
+
+- **Never commit keys.** `.env` is gitignored; template in `.env.example`.
+- Local dev: AI Studio (`GOOGLE_API_KEY`, `GOOGLE_GENAI_USE_VERTEXAI=False`).
+- Cloud Run: key injected from **Secret Manager**.
+- `kaggle-instructions/` is local-only (gitignored) — do not publish.
+
+## 5. Inviolable constraints
+
+- ✅ **Never** add Claude/AI as a commit author or `Co-Authored-By`.
+- ✅ **Never** change the model without an explicit request.
+- ✅ **Never** commit API keys.
+- ✅ **Evals first** — they are the core of the badge; do not cut them.
+- ✅ `pytest` + `lint` green before considering a task done.
+- ✅ Always update `HISTORY.md` and `CODEBASE_STRUCTURE.md`.
 
 ---
 
-## 6. Vincoli inviolabili
-
-- ✅ **SOLO git locale** — niente GitHub, niente `git push`, niente remote.
-- ✅ **MAI cambiare il modello** senza richiesta esplicita.
-- ✅ **MAI committare API key** — sempre in `.env`.
-- ✅ **Evals prima di tutto** — sono il cuore del badge; non tagliarle.
-- ✅ **`pytest` + `lint` verdi** prima di considerare un task chiuso.
-- ✅ **SEMPRE** aggiornare HISTORY.md e CODEBASE_STRUCTURE.md a fine task.
-
----
-
-*Ultimo aggiornamento: 04/07/2026 — riscritto per il capstone BandoPilot (ADK).*
+*Last updated: 04/07/2026 — English rewrite; GitHub remote added (author: Gaia Cecchi only).*
