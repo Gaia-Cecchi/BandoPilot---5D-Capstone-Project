@@ -2,9 +2,16 @@
 
 > 5-Day AI Agents: Intensive Vibe Coding Course (Google × Kaggle) — track a tema libero.
 
-- **App URL (Cloud Run):** _[DA INSERIRE dopo il deploy]_
+- **App URL (Cloud Run, pubblico):** https://bandopilot-530700297106.us-central1.run.app
+  (il root reindirizza alla **UI di chat** `/dev-ui/`; nessuna password richiesta)
 - **Video demo:** _[DA INSERIRE — 2-3 min]_
 - **Codice:** repository di questo progetto (`bandopilot/`)
+
+> **Come provare la demo:** apri l'App URL nel browser, seleziona l'app `app` e scrivi
+> il tuo profilo (es. *"Piccola impresa ICT in Lombardia, fatturato 800k, attiva da 3
+> anni: sono eleggibile al voucher-digitalizzazione-lombardia?"*). Il servizio è in
+> scale-to-zero (prima richiesta ~30s di cold start) ed è protetto da un tetto di spesa
+> sulla API key.
 
 ---
 
@@ -122,9 +129,13 @@ chiamano il modello sono opt-in via `RUN_LLM_TESTS=1` per non consumare quota).
 
 ## 6. Deployment
 
-Prototype-first con `agents-cli`. Deploy target **Cloud Run** (container isolato);
-su Cloud Run l'auth passa a Vertex e la telemetria a Cloud Logging/Trace.
-Comandi: `agents-cli scaffold enhance . --deployment-target cloud_run` → `agents-cli deploy`.
+Prototype-first con `agents-cli`. **Deployato e live su Cloud Run** (container isolato,
+scale-to-zero, `min-instances 0` per costo idle ~0). La `GOOGLE_API_KEY` è iniettata da
+**Secret Manager** (non in chiaro). Servizio pubblico (`allUsers` → `run.invoker`) con
+UI di chat su `/dev-ui/` e Agent Card A2A su `/a2a/app/.well-known/agent-card.json`
+(verificata HTTP 200). Testato end-to-end in produzione via A2A.
+Comandi: `agents-cli scaffold enhance . --deployment-target cloud_run` →
+`agents-cli deploy --secrets GOOGLE_API_KEY=bandopilot-api-key --update-env-vars GOOGLE_GENAI_USE_VERTEXAI=False --min-instances 0`.
 
 ## 7. Limiti e onestà intellettuale
 

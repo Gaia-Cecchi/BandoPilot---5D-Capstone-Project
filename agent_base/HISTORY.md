@@ -4,6 +4,19 @@ Storico delle decisioni e delle fasi del capstone. Voce piu recente in alto.
 
 ---
 
+## 2026-07-04 — DEPLOY Cloud Run live (pubblico)
+
+**Fatto:**
+- Progetto GCP utente: `gen-lang-client-0803727006` (num 530700297106), billing cap ~3 EUR sulla chiave AI Studio.
+- Modello reso env-overridable: `BANDOPILOT_MODEL` (default `gemini-2.5-flash`).
+- Requisiti ufficiali verificati (`vibecoding-agents-capstone-project`): obbligatori = writeup + video + rationale + link codice. MCP/evals/deploy = "top submission", non strettamente obbligatori. Unico mancante obbligatorio: VIDEO (utente).
+- Prep deploy: abilitate API (run, cloudbuild, secretmanager, artifactregistry); secret `bandopilot-api-key` (v1) con la chiave; secretAccessor al compute default SA.
+- **Deploy Cloud Run riuscito**: `https://bandopilot-530700297106.us-central1.run.app` — pubblico (allUsers run.invoker), scale-to-zero (min 0, max 2), chiave da Secret Manager, `GOOGLE_GENAI_USE_VERTEXAI=False`.
+- Verificato live: Agent Card A2A HTTP 200; UI chat su `/dev-ui/`; query end-to-end via A2A OK (eleggibilita con citazione + scadenza + disclaimer).
+- Writeup aggiornato con App URL e istruzioni demo.
+
+**Da fare (solo utente):** registrare il video 2-3 min, inserirlo nel writeup, submit su Kaggle. Verificare la deadline reale sulla pagina loggata.
+
 ## 2026-07-04 — Modello economico, writeup, scaffolding Cloud Run
 
 **Fatto:**
