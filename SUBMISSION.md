@@ -34,24 +34,17 @@ leaving the signature and submission to the human.
 The model (`gemini-2.5-flash`) is ~10%. The value is the **Harness**: an orchestrated
 multi-agent system with knowledge served over **MCP**.
 
-```
-                 ┌─────────────────────────────┐
-   user   ───▶   │        root_agent           │  orchestrator
-                 │  (guardrails + observability)│
-                 └──────┬───────────┬───────────┘
-             AgentTool  │           │  AgentTool
-               ┌────────▼──┐   ┌────▼──────────┐   ┌───────────────┐
-               │ finder_   │   │ eligibility_  │   │ drafter_agent │
-               │ agent     │   │ agent         │   │               │
-               └────┬──────┘   └──────┬────────┘   └──────┬────────┘
-              MCP    │        function │            function│
-             (stdio) │          tool   │              tool  │
-        ┌────────────▼───┐   ┌─────────▼─────────┐  ┌───────▼────────┐
-        │  MCP server    │   │ verifica_         │  │ dettaglio_     │
-        │  (grants corpus)│  │ eleggibilita()    │  │ bando()        │
-        │  search / get  │   │ (deterministic)   │  │                │
-        └────────────────┘   └───────────────────┘  └────────────────┘
-```
+**`root_agent`** (orchestrator — guardrails + observability) receives the user request and
+delegates to three specialists via `AgentTool`:
+
+| Sub-agent | Talks to | Via |
+|---|---|---|
+| `finder_agent` | **MCP server** → grants corpus (`search` / `get`) | MCP (stdio) |
+| `eligibility_agent` | `verifica_eleggibilita()` — deterministic eligibility check | function tool |
+| `drafter_agent` | `dettaglio_bando()` — grant detail lookup | function tool |
+
+The orchestrator stays in control throughout and synthesizes the final answer from the
+three specialists' outputs.
 
 ### The 6 context pillars → where they live in the code
 
