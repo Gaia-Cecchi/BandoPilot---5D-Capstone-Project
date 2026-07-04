@@ -43,7 +43,7 @@ from mcp import StdioServerParameters
 from .guardrails import blocca_azioni_vietate, traccia_tool_call
 from .tools import dettaglio_bando, verifica_eleggibilita
 
-MODEL = "gemini-flash-latest"
+MODEL = "gemini-2.5-flash"
 _PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
 _MCP_SERVER = str(_PROJECT_ROOT / "app" / "mcp_server.py")
 

@@ -82,7 +82,7 @@ Le 3 eval previste:
 
 ### 3.1 Preservazione del codice
 - **Modifica solo cio che il task richiede.** Preserva codice, config (specialmente `model`), commenti e formattazione circostanti.
-- **NON cambiare MAI il modello** (`gemini-flash-latest`) se non esplicitamente richiesto.
+- **NON cambiare MAI il modello** (`gemini-2.5-flash`) se non esplicitamente richiesto.
 - **Non riscrivere a mano il layer A2A** ne l'infra runtime generata (`app/fast_api_app.py`, `app/app_utils/*`, `Dockerfile`): sono cablati dallo scaffold.
 
 ### 3.2 Convenzioni
@@ -93,7 +93,7 @@ Le 3 eval previste:
 - **Stop dopo 3 errori uguali**: se lo stesso errore si ripete 3+ volte, fixa la causa radice invece di ritentare.
 
 ### 3.3 Gemini API — minimizzare costi
-- **Modello primario**: `gemini-flash-latest` (default per TUTTO).
+- **Modello primario**: `gemini-2.5-flash` (default per TUTTO; scelto per costo contenuto).
 - **Model routing**: usa modelli piu potenti solo dove serve ragionamento architetturale; task deterministici (estrazione, check) restano sul flash.
 - **Errore 404 sul modello**: NON cambiare il nome del modello, correggi `GOOGLE_CLOUD_LOCATION` (es. `global`).
 
