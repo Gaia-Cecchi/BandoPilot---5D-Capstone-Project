@@ -4,6 +4,23 @@ Storico delle decisioni e delle fasi del capstone. Voce piu recente in alto.
 
 ---
 
+## 2026-07-04 — Agente multi-agente funzionante
+
+**Fatto:**
+- `app/mcp_server.py`: server MCP (FastMCP, stdio) che espone `search_bandi` e `get_bando` sul corpus.
+- `app/tools.py`: function tool ADK `verifica_eleggibilita(bando_id, profilo)` e `dettaglio_bando(bando_id)`.
+- `app/guardrails.py`: `blocca_azioni_vietate` (before_model_callback, blocca invio/pagamento/firma) e `traccia_tool_call` (before_tool_callback, tool_trace in stato = observability).
+- `app/agent.py` riscritto: sub-agenti Finder (via MCP), EligibilityChecker, Drafter, orchestrati dal root_agent tramite AgentTool. Auth AI Studio via `.env` (`GOOGLE_GENAI_USE_VERTEXAI=False`).
+- Dipendenze aggiunte: `mcp`, `python-dotenv`. `agents-cli install` OK.
+
+**Testato end-to-end (`agents-cli run`, modello gemini-flash-latest):**
+- Finder -> MCP search: rosa corretta (voucher Lombardia in cima per query digitalizzazione).
+- Orchestratore -> eligibility_agent -> tool: esito eleggibile con citazione clausole R1/R2/R3, scadenza (103 gg, attivo), fonte ufficiale + disclaimer corpus.
+- Guardrail: "invia la domanda e paga" -> rifiuto deterministico, nessun tool chiamato.
+
+**Note/rischi:**
+- Il chaining finder->eligibility in un solo turno con flash puo essere incostante (una run si e fermata al finder); rinforzata l'istruzione del root. Da coprire con eval.
+
 ## 2026-07-04 — Setup iniziale
 
 **Decisioni prese:**
