@@ -2,10 +2,13 @@
 
 > 5-Day AI Agents: Intensive Vibe Coding Course (Google × Kaggle) — open-theme track.
 
+- **Submission track:** Agents for Business — BandoPilot helps Italian SMEs and
+  professionals find, qualify for, and apply to public funding, so it's built to
+  support a business function, not a personal/lifestyle or general-good use case.
 - **App URL (Cloud Run, public):** https://bandopilot-530700297106.us-central1.run.app
   (the root redirects to the **chat UI** at `/dev-ui/`; no password required)
 - **Demo video:** https://youtu.be/AOttBc413wY
-- **Code:** this repository (`bandopilot/`)
+- **Code:** https://github.com/Gaia-Cecchi/BandoPilot---5D-Capstone-Project
 
 > **How to try the demo:** open the App URL in a browser, select the `app` agent, and
 > describe your profile (e.g. *"Small ICT company in Lombardy, €800k revenue, 3 years old
