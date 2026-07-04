@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "descrizione": "Dataset etichettato per la valutazione della retrieval. Per ogni query di ricerca si indicano i bandi che DEVONO comparire nella top-k.",
+    "metrica": "recall@k e hit-rate@k"
+  },
+  "cases": [
+    {"id": "ret-01", "params": {"settore": "ICT", "regione": "Lombardia", "dimensione": "piccola", "query": "digitalizzazione ecommerce"}, "k": 5, "attesi": ["voucher-digitalizzazione-lombardia"]},
+    {"id": "ret-02", "params": {"settore": "manifatturiero", "regione": "Toscana", "dimensione": "media", "query": "innovazione ricerca sviluppo"}, "k": 5, "attesi": ["toscana-innovazione-pmi"]},
+    {"id": "ret-03", "params": {"settore": "turismo", "regione": "Veneto", "dimensione": "piccola", "query": "turismo struttura ricettiva"}, "k": 5, "attesi": ["bando-turismo-veneto"]},
+    {"id": "ret-04", "params": {"dimensione": "startup", "query": "startup innovativa tasso zero"}, "k": 5, "attesi": ["smart-start-italia"]},
+    {"id": "ret-05", "params": {"regione": "Campania", "dimensione": "micro", "query": "nuova impresa mezzogiorno"}, "k": 5, "attesi": ["resto-al-sud"]},
+    {"id": "ret-06", "params": {"settore": "manifatturiero", "query": "internazionalizzazione mercati esteri fiere"}, "k": 5, "attesi": ["simest-394-internazionalizzazione"]},
+    {"id": "ret-07", "params": {"dimensione": "media", "query": "beni strumentali macchinari attrezzature"}, "k": 5, "attesi": ["nuova-sabatini"]},
+    {"id": "ret-08", "params": {"settore": "edilizia", "query": "sicurezza sul lavoro"}, "k": 5, "attesi": ["isi-inail-sicurezza"]},
+    {"id": "ret-09", "params": {"query": "formazione dipendenti tecnologie"}, "k": 5, "attesi": ["formazione-40"]},
+    {"id": "ret-10", "params": {"dimensione": "micro", "query": "impresa femminile donne"}, "k": 5, "attesi": ["fondo-impresa-femminile"]}
+  ]
+}

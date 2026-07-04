@@ -1,17 +1,24 @@
 {
   "eval_cases": [
     {
-      "eval_case_id": "greeting",
+      "eval_case_id": "traj_eligibility_lombardia",
       "prompt": {
         "role": "user",
-        "parts": [{"text": "Hello, what can you help me with?"}]
+        "parts": [{"text": "Sono una piccola impresa ICT in Lombardia, fatturato 800000 euro, attiva da 3 anni. Sono eleggibile al voucher-digitalizzazione-lombardia?"}]
       }
     },
     {
-      "eval_case_id": "weather_query",
+      "eval_case_id": "traj_eligibility_toscana",
       "prompt": {
         "role": "user",
-        "parts": [{"text": "What's the weather like in San Francisco?"}]
+        "parts": [{"text": "Ho una media impresa manifatturiera in Toscana con fatturato 2 milioni. Posso accedere al bando toscana-innovazione-pmi? Verifica i requisiti."}]
+      }
+    },
+    {
+      "eval_case_id": "traj_eligibility_startup_negativo",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Sono una media impresa ICT in Lombardia attiva da 2 anni. Sono eleggibile a smart-start-italia?"}]
       }
     }
   ]

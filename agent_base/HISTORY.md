@@ -4,6 +4,19 @@ Storico delle decisioni e delle fasi del capstone. Voce piu recente in alto.
 
 ---
 
+## 2026-07-04 — Suite di Evals + test + fix boot locale
+
+**Fatto:**
+- Eval deterministiche (no LLM, no GCP): `tests/eval/domain_eval.py` + dataset etichettati in `tests/eval/labeled/` (eligibility 20 casi, retrieval 10). Risultati: **eligibility accuracy 100% (macro P/R 100%)**, **retrieval recall@k 100% / hit-rate 100%**. Gate a 90%.
+- Trajectory eval LLM: `tests/eval/trajectory_eval.py` via ADK Runner (solo API key). Verifica: tool di verifica usato + citazione clausola (R\\d) + scadenza menzionata. **2/3 casi score 1.00** prima del 429; harness reso resiliente al 429 (salta il caso e continua).
+- Config ADK eval: `tests/eval/eval_config.yaml` con metrica **custom locale** `trajectory_eleggibilita` (in-process, niente GCP). Dataset inferenza ADK: `tests/eval/datasets/basic-dataset.json` (3 casi eleggibilita).
+- Unit test deterministici: `tests/unit/test_domain.py` (9 casi). Test LLM (integration) gate-ati dietro `RUN_LLM_TESTS=1`. **pytest: 11 passed, 3 skipped.**
+- Fix boot locale: `app/fast_api_app.py` ora tollera assenza di progetto GCP (Cloud Logging -> shim su logging standard in dev AI Studio). Su Cloud Run comportamento invariato.
+
+**LIMITE IMPORTANTE — quota free-tier AI Studio:**
+- `gemini-flash-latest` risolve a `gemini-3.5-flash`; free tier = **20 richieste/giorno**. Il multi-agente fa ~4-6 chiamate LLM per query -> ~3-4 query complete al giorno con la chiave gratuita.
+- Impatta: ripetere le eval LLM, demo/video. Mitigazioni: attivare billing sulla chiave, oppure pianificare le run. Le eval deterministiche e i unit test NON consumano quota.
+
 ## 2026-07-04 — Agente multi-agente funzionante
 
 **Fatto:**

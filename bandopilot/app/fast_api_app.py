@@ -31,9 +31,24 @@ from app.app_utils.typing import Feedback
 
 load_dotenv()
 setup_telemetry()
-_, project_id = google.auth.default()
-logging_client = google_cloud_logging.Client()
-logger = logging_client.logger(__name__)
+try:
+    # Cloud Run / Vertex: real Cloud Logging.
+    _, project_id = google.auth.default()
+    logging_client = google_cloud_logging.Client()
+    logger = logging_client.logger(__name__)
+except Exception:  # local dev (AI Studio) without GCP project/credentials
+    import logging as _logging
+
+    _std_logger = _logging.getLogger(__name__)
+
+    class _LocalLogger:
+        """Minimal stand-in exposing the log_struct API used below."""
+
+        def log_struct(self, data: dict, severity: str = "INFO") -> None:
+            _std_logger.info("%s: %s", severity, data)
+
+    project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
+    logger = _LocalLogger()
 allow_origins = (
     os.getenv("ALLOW_ORIGINS", "").split(",") if os.getenv("ALLOW_ORIGINS") else None
 )

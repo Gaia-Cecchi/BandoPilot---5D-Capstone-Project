@@ -124,6 +124,10 @@ def server_fixture(request: Any) -> Iterator[subprocess.Popen[str]]:
     yield server_process
 
 
+@pytest.mark.skipif(
+    os.environ.get("RUN_LLM_TESTS") != "1",
+    reason="Chiama il modello e consuma quota; abilita con RUN_LLM_TESTS=1",
+)
 def test_adk_run_sse(server_fixture: subprocess.Popen[str]) -> None:
     """Test the native ADK route (/run_sse) end to end."""
     logger.info("Starting ADK /run_sse test")
@@ -168,6 +172,10 @@ def test_adk_run_sse(server_fixture: subprocess.Popen[str]) -> None:
     assert has_text_content, "Expected at least one event with text content"
 
 
+@pytest.mark.skipif(
+    os.environ.get("RUN_LLM_TESTS") != "1",
+    reason="Chiama il modello e consuma quota; abilita con RUN_LLM_TESTS=1",
+)
 def test_a2a_chat_stream(server_fixture: subprocess.Popen[str]) -> None:
     """Test the A2A route using the JSON-RPC streaming protocol."""
     logger.info("Starting A2A chat stream test")

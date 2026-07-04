@@ -1,30 +1,52 @@
+# Eval config for BandoPilot.
+#
+# The LLM-level check runs a LOCAL custom code metric (execution: local by
+# default) so it needs no GCP project — it grades the real agent traces produced
+# by `agents-cli eval generate` in AI Studio mode.
+#
+# The deterministic eligibility/retrieval precision/recall metrics live in
+# tests/eval/domain_eval.py (run separately).
+
 metrics_to_run:
-  - custom_response_quality
+  - trajectory_eleggibilita
 
 custom_metrics:
-  - name: custom_response_quality
-    prompt_template: |
-      You are an expert quality assurance evaluator for an enterprise AI assistant. Your task is to evaluate the agent's final response given the user prompt and the full agent trace (for tool-call and reasoning context).
-
-      Please grade the response quality on a scale of 1 to 5 according to the following criteria:
-      1 (Poor): The response fails to address the query, contains incorrect information, or is highly confusing.
-      2 (Below Average): The response partially addresses the query but has notable inaccuracies, gaps, or unclear structure.
-      3 (Acceptable): The response adequately answers the query but lacks depth, clear structure, or misses minor details.
-      4 (Good): The response is accurate, well-structured, and covers the query thoroughly with minor room for improvement.
-      5 (Excellent): The response is highly relevant, comprehensive, flawlessly accurate, and excellently structured.
-
-      ### Target Evaluation:
-      User Prompt: {prompt}
-      Final Response: {response}
-      Full Agent Trace: {agent_data}
-
-      Return your evaluation as a valid JSON object matching this structure:
-      {
-        "score": <integer between 1 and 5>,
-        "explanation": "<detailed string explaining the rationale for the score assigned>"
-      }
-  - name: agent_turn_count
+  # Trajectory eval: for an eligibility question, did the agent actually USE the
+  # verification tool, CITE a clause code (R1, R2, ...), and surface the
+  # DEADLINE? Grades the reasoning path, not just the final answer.
+  - name: trajectory_eleggibilita
     custom_function: |
       def evaluate(instance):
-          turns = (instance.get("agent_data") or {}).get("turns", [])
-          return {'score': len(turns)}
+          import re
+
+          data = instance.get("agent_data") or {}
+          call_names = []
+          texts = []
+          for turn in data.get("turns", []):
+              for ev in turn.get("events", []):
+                  content = ev.get("content") or {}
+                  for part in (content.get("parts") or []):
+                      fc = part.get("function_call")
+                      if fc and fc.get("name"):
+                          call_names.append(fc["name"])
+                      fr = part.get("function_response")
+                      if fr and fr.get("response") is not None:
+                          texts.append(str(fr.get("response")))
+                      if part.get("text"):
+                          texts.append(part["text"])
+
+          resp = instance.get("response") or {}
+          final = " ".join(p.get("text", "") for p in (resp.get("parts") or []))
+          blob = (final + " " + " ".join(texts))
+          blob_low = blob.lower()
+
+          tool_ok = ("verifica_eleggibilita" in call_names) or ("eligibility_agent" in call_names)
+          cited = bool(re.search(r"\bR[1-9]\b", blob))
+          deadline = ("scaden" in blob_low) or ("scadut" in blob_low)
+
+          score = 0.5 * float(tool_ok) + 0.25 * float(cited) + 0.25 * float(deadline)
+          explanation = (
+              "tool_verifica=%s | citazione_clausola=%s | scadenza_menzionata=%s"
+              % (tool_ok, cited, deadline)
+          )
+          return {"score": score, "explanation": explanation}

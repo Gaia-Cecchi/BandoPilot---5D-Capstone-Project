@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "descrizione": "Dataset etichettato per la valutazione deterministica dell'eleggibilita. Ogni caso associa un (profilo, bando) all'esito atteso, assegnato manualmente in base ai requisiti del corpus.",
+    "esiti": ["eleggibile", "non_eleggibile", "da_verificare"]
+  },
+  "cases": [
+    {"id": "elig-01", "bando_id": "voucher-digitalizzazione-lombardia", "profilo": {"settore": "ICT", "regione": "Lombardia", "dimensione": "piccola", "fatturato": 800000}, "atteso": "eleggibile"},
+    {"id": "elig-02", "bando_id": "voucher-digitalizzazione-lombardia", "profilo": {"settore": "ICT", "regione": "Lazio", "dimensione": "piccola", "fatturato": 800000}, "atteso": "non_eleggibile"},
+    {"id": "elig-03", "bando_id": "voucher-digitalizzazione-lombardia", "profilo": {"settore": "commercio", "regione": "Lombardia", "dimensione": "grande", "fatturato": 5000000}, "atteso": "non_eleggibile"},
+    {"id": "elig-04", "bando_id": "voucher-digitalizzazione-lombardia", "profilo": {"settore": "commercio", "regione": "Lombardia", "dimensione": "media", "fatturato": 60000000}, "atteso": "non_eleggibile"},
+    {"id": "elig-05", "bando_id": "toscana-innovazione-pmi", "profilo": {"settore": "manifatturiero", "regione": "Toscana", "dimensione": "media", "fatturato": 2000000}, "atteso": "eleggibile"},
+    {"id": "elig-06", "bando_id": "toscana-innovazione-pmi", "profilo": {"settore": "ICT", "regione": "Lombardia", "dimensione": "piccola", "fatturato": 500000}, "atteso": "non_eleggibile"},
+    {"id": "elig-07", "bando_id": "toscana-innovazione-pmi", "profilo": {"settore": "ICT", "regione": "Toscana", "dimensione": "startup", "fatturato": 100000}, "atteso": "non_eleggibile"},
+    {"id": "elig-08", "bando_id": "bando-turismo-veneto", "profilo": {"settore": "turismo", "regione": "Veneto", "dimensione": "piccola"}, "atteso": "eleggibile"},
+    {"id": "elig-09", "bando_id": "bando-turismo-veneto", "profilo": {"settore": "turismo", "regione": "Lombardia", "dimensione": "piccola"}, "atteso": "non_eleggibile"},
+    {"id": "elig-10", "bando_id": "bando-turismo-veneto", "profilo": {"settore": "manifatturiero", "regione": "Veneto", "dimensione": "piccola"}, "atteso": "non_eleggibile"},
+    {"id": "elig-11", "bando_id": "smart-start-italia", "profilo": {"settore": "ICT", "regione": "Lombardia", "dimensione": "startup", "anni_attivita": 2}, "atteso": "da_verificare"},
+    {"id": "elig-12", "bando_id": "smart-start-italia", "profilo": {"settore": "ICT", "regione": "Lombardia", "dimensione": "media", "anni_attivita": 2}, "atteso": "non_eleggibile"},
+    {"id": "elig-13", "bando_id": "smart-start-italia", "profilo": {"settore": "ICT", "regione": "Lombardia", "dimensione": "startup", "anni_attivita": 7}, "atteso": "non_eleggibile"},
+    {"id": "elig-14", "bando_id": "nuova-sabatini", "profilo": {"settore": "manifatturiero", "regione": "Piemonte", "dimensione": "piccola"}, "atteso": "da_verificare"},
+    {"id": "elig-15", "bando_id": "nuova-sabatini", "profilo": {"settore": "manifatturiero", "regione": "Piemonte", "dimensione": "grande"}, "atteso": "non_eleggibile"},
+    {"id": "elig-16", "bando_id": "resto-al-sud", "profilo": {"settore": "commercio", "regione": "Campania", "dimensione": "micro", "anni_attivita": 2}, "atteso": "da_verificare"},
+    {"id": "elig-17", "bando_id": "resto-al-sud", "profilo": {"settore": "commercio", "regione": "Lombardia", "dimensione": "micro", "anni_attivita": 2}, "atteso": "non_eleggibile"},
+    {"id": "elig-18", "bando_id": "simest-394-internazionalizzazione", "profilo": {"settore": "manifatturiero", "regione": "Veneto", "dimensione": "media", "anni_attivita": 5}, "atteso": "da_verificare"},
+    {"id": "elig-19", "bando_id": "simest-394-internazionalizzazione", "profilo": {"settore": "manifatturiero", "regione": "Veneto", "dimensione": "media", "anni_attivita": 1}, "atteso": "non_eleggibile"},
+    {"id": "elig-20", "bando_id": "credito-imposta-40", "profilo": {"settore": "manifatturiero", "regione": "Lazio", "dimensione": "media"}, "atteso": "da_verificare"}
+  ]
+}
