@@ -43,7 +43,9 @@ from mcp import StdioServerParameters
 from .guardrails import blocca_azioni_vietate, traccia_tool_call
 from .tools import dettaglio_bando, verifica_eleggibilita
 
-MODEL = "gemini-2.5-flash"
+# gemini-2.5-flash per sviluppo/test (costo contenuto). Alla pubblicazione si puo
+# passare a gemini-flash-latest impostando BANDOPILOT_MODEL, senza toccare il codice.
+MODEL = os.environ.get("BANDOPILOT_MODEL", "gemini-2.5-flash")
 _PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
 _MCP_SERVER = str(_PROJECT_ROOT / "app" / "mcp_server.py")
 
