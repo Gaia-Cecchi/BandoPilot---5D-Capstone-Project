@@ -1,12 +1,29 @@
-# Python / uv
-.venv/
-__pycache__/
-*.pyc
-
-# Env / secrets
+# --- Secrets / env (public repo: never commit) ---
 .env
 *.env
 !*.env.example
+*.key
+*credentials*.json
+service-account*.json
 
-# OS / editor
+# --- Course material (kept local, not published) ---
+kaggle-instructions/
+
+# --- Python / uv ---
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# --- ADK / eval / deploy artifacts ---
+artifacts/
+deployment_metadata.json
+*.log
+
+# --- OS / editor ---
 .DS_Store
+Thumbs.db
+.idea/
+*.swp
