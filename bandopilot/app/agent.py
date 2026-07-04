@@ -38,14 +38,28 @@ from google.adk.apps import App
 from google.adk.tools import AgentTool
 from google.adk.tools.mcp_tool import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
+from google.genai import types as genai_types
 from mcp import StdioServerParameters
 
 from .guardrails import blocca_azioni_vietate, traccia_tool_call
 from .tools import dettaglio_bando, verifica_eleggibilita
 
-# gemini-2.5-flash per sviluppo/test (costo contenuto). Alla pubblicazione si puo
-# passare a gemini-flash-latest impostando BANDOPILOT_MODEL, senza toccare il codice.
+# gemini-2.5-flash is the default: reliable multi-agent tool-calling and cheap
+# enough under the budget cap. gemini-2.5-flash-lite was tested but is too shy
+# about tool use here (even with a thinking budget), so it is not the default.
+# Override via BANDOPILOT_MODEL (e.g. gemini-2.5-flash-lite, gemini-flash-latest).
 MODEL = os.environ.get("BANDOPILOT_MODEL", "gemini-2.5-flash")
+
+# Optional thinking budget (helps weaker models reason about delegation/tools).
+# Off by default; enable with BANDOPILOT_THINKING=1 (useful if you switch to lite).
+_THINKING = os.environ.get("BANDOPILOT_THINKING", "0") != "0"
+GEN_CONFIG = (
+    genai_types.GenerateContentConfig(
+        thinking_config=genai_types.ThinkingConfig(thinking_budget=1024)
+    )
+    if _THINKING
+    else None
+)
 _PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
 _MCP_SERVER = str(_PROJECT_ROOT / "app" / "mcp_server.py")
 
@@ -76,6 +90,7 @@ finder_agent = Agent(
         "servono per affinare la ricerca."
     ),
     tools=[bandi_mcp],
+    generate_content_config=GEN_CONFIG,
     before_tool_callback=traccia_tool_call,
 )
 
@@ -93,6 +108,7 @@ eligibility_agent = Agent(
         "sulla fonte ufficiale indicata."
     ),
     tools=[verifica_eleggibilita],
+    generate_content_config=GEN_CONFIG,
     before_tool_callback=traccia_tool_call,
 )
 
@@ -108,6 +124,7 @@ drafter_agent = Agent(
         "dati specifici dell'impresa. Non affermare che la domanda e stata inviata."
     ),
     tools=[dettaglio_bando],
+    generate_content_config=GEN_CONFIG,
     before_tool_callback=traccia_tool_call,
 )
 
@@ -146,6 +163,7 @@ root_agent = Agent(
         AgentTool(eligibility_agent),
         AgentTool(drafter_agent),
     ],
+    generate_content_config=GEN_CONFIG,
     before_model_callback=blocca_azioni_vietate,
     before_tool_callback=traccia_tool_call,
 )
