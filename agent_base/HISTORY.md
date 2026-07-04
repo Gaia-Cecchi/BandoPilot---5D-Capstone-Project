@@ -4,6 +4,16 @@ Storico delle decisioni e delle fasi del capstone. Voce piu recente in alto.
 
 ---
 
+## 2026-07-04 — Modello economico, writeup, scaffolding Cloud Run
+
+**Fatto:**
+- Modello cambiato (richiesta esplicita utente) da `gemini-flash-latest` a **`gemini-2.5-flash`** (costo minore + bucket quota separato). Smoke test OK: orchestrazione buona, Finder+Eligibility anche in parallelo, esiti con citazione clausole.
+- **`SUBMISSION.md`**: writeup Kaggle completo (problema, architettura Agent=Model+Harness, 6 pilastri, MCP, evals con numeri, guardrails, limiti). Segnaposto per URL Cloud Run e video.
+- `agents-cli scaffold enhance . --deployment-target cloud_run`: aggiunta `deployment/terraform/single-project/`, Dockerfile Cloud Run (uvicorn su 8080), deps deploy. `uv.lock` rigenerato (build `uv sync --frozen` pronta). Nessun deploy eseguito.
+- Piano utente: abilitare billing con cap ~3 EUR sulla chiave AI Studio per togliere il limite di quota.
+
+**Da fare:** deploy Cloud Run vero (serve progetto GCP; scaffolding pronto), registrare il video, inserire URL nel writeup.
+
 ## 2026-07-04 — Suite di Evals + test + fix boot locale
 
 **Fatto:**
